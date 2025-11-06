@@ -77,9 +77,9 @@ function PayslipPreview({ data }: PayslipPreviewProps) {
 
       {/* Footer */}
       <footer className="mt-auto pt-2 border-t-2 border-white">
-        <div className="flex justify-between">
-          {/* Coluna 1: Bases de Cálculo */}
-          <div className="w-3/5 grid grid-cols-3 gap-x-4">
+        <div className="flex flex-col gap-4">
+          {/* Coluna 1: Bases de Cálculo - AGORA VERTICAL */}
+          <div className="flex flex-col gap-1">
             <div className="font-bold">Salário Base: <span className="font-normal">{data.salarioBase}</span></div>
             <div className="font-bold">Sal. Contr. INSS: <span className="font-normal">{data.salContrInss}</span></div>
             <div className="font-bold">Base Cálc. FGTS: <span className="font-normal">{data.baseCalcFgts}</span></div>
@@ -89,7 +89,7 @@ function PayslipPreview({ data }: PayslipPreviewProps) {
           </div>
 
           {/* Coluna 2: Totais */}
-          <div className="w-2/5 flex justify-end gap-4">
+          <div className="flex justify-end gap-4 mt-4">
             <div className="text-right">
               <p className="font-bold">Total de Vencimentos:</p>
               <p className="font-bold">Total de Descontos:</p>
@@ -102,13 +102,13 @@ function PayslipPreview({ data }: PayslipPreviewProps) {
             </div>
           </div>
         </div>
-        <div className="flex justify-between items-end mt-8">
+        <div className="flex flex-col items-start gap-4 mt-8">
             <div>
                 <p>Banco: {data.bankName} | Agência: {data.bankAgency} | Conta: {data.bankAccount}</p>
                 <p>Data para pagamento: {data.paymentDate || 'dd/mm/aaaa'}</p>
             </div>
-            <div className="text-center">
-                <div className="border-t border-black w-48 mx-auto mt-2"></div>
+            <div className="text-center w-full mt-8">
+                <div className="border-t border-black w-48 mx-auto"></div>
                 <p>Assinatura do Funcionário</p>
             </div>
         </div>

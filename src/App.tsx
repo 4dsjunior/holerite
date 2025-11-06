@@ -58,11 +58,11 @@ function App() {
     if (!element) return;
 
     const opt = {
-      margin: 5,
+      margin: 0,
       filename: 'holerite.pdf',
       image: { type: 'jpeg' as const, quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm' as const, format: 'a5' as const, orientation: 'landscape' as const }
+      jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
     };
 
     html2pdf().from(element).set(opt).save();
@@ -92,19 +92,14 @@ function App() {
                                           className="mx-auto overflow-hidden shadow-lg"
 
                                           style={{
-
-                                            display: 'flex',
-
-                                            flexDirection: 'column',
-
-                                            width: '200mm', 
-
-                                            height: '138mm', 
-
+                                            width: '190mm',
+                                            minHeight: 'auto',
+                                            height: 'auto',
+                                            padding: '10mm',
                                             margin: '20px auto',
-
-                                            backgroundColor: '#E4FCE4' 
-
+                                            boxShadow: '0 0 10px rgba(0,0,0,0.15)',
+                                            backgroundColor: '#E4FCE4',
+                                            overflowX: 'hidden'
                                           }}
 
                                         >
