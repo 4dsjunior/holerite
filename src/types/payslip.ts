@@ -1,31 +1,27 @@
-export interface PayslipEntry {
+export interface PayslipItem {
   code: string;
   description: string;
   reference: string;
-  vencimento: string;
-  desconto: string;
+  earnings: number;
+  deductions: number;
 }
 
 export interface PayslipData {
+  period: string;
   companyName: string;
-  companyCnpj: string;
   companyAddress: string;
+  companyCnpj: string;
   employeeName: string;
-  employeeCpf: string;
-  employeePosition: string;
   employeeCode: string;
-  admissionDate: string;
-  referenceMonth: string;
-  referenceYear: string;
-  entries: PayslipEntry[];
-  bankName: string;
-  bankAgency: string;
-  bankAccount: string;
-  salarioBase: string;
-  salContrInss: string;
-  baseCalcFgts: string;
-  fgtsMes: string;
-  baseCalcIrrf: string;
-  faixaIrrf: string;
-  paymentDate: string;
+  employeeCbo: string;
+  employeeFunction: string;
+  items: PayslipItem[];
+  baseSalary: number;
+  inssBase: number;
+  fgtsBase: number;
+  fgtsMonth: number;
+  irrfBase: number;
+  bank: string;
+  agency: string;
+  account: string;
 }

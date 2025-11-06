@@ -1,125 +1,78 @@
+// src/App.tsx
+
 import { useState } from 'react';
 import PayslipForm from './components/PayslipForm';
-import PayslipPreview from './components/PayslipPreview';
-import { PayslipData, PayslipEntry } from './types/payslip';
-import html2pdf from 'html2pdf.js';
+import { PayslipPreview } from './components/PayslipPreview';
+import { PayslipData } from './types/payslip';
 
 function App() {
-  const [formData, setFormData] = useState<PayslipData>({
-    companyName: '',
-    companyCnpj: '',
-    companyAddress: '',
-    employeeName: '',
-    employeeCpf: '',
-    employeePosition: '',
-    employeeCode: '',
-    admissionDate: '',
-    referenceMonth: '',
-    referenceYear: '',
-    entries: [],
-    bankName: '',
-    bankAgency: '',
-    bankAccount: '',
-    salarioBase: '',
-    salContrInss: '',
-    baseCalcFgts: '',
-    fgtsMes: '',
-    baseCalcIrrf: '',
-    faixaIrrf: '',
-    paymentDate: ''
-  });
+  const [payslipData, setPayslipData] = useState<PayslipData | null>(null);
 
-  const handleInputChange = (field: keyof PayslipData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  // Dados de exemplo para preencher o formulário e o preview
+  const exampleData: PayslipData = {
+    period: "",
+    companyName: "",
+    companyAddress: "",
+    companyCnpj: "",
+    employeeName: "",
+    employeeCode: "",
+    employeeCbo: "",
+    employeeFunction: "",
+    items: [
+      { code: "", description: "", reference: "", earnings: "", deductions: "" },
+    ],
+    baseSalary: "",
+    inssBase: "",
+    fgtsBase: "",
+    fgtsMonth: "",
+    irrfBase: "",
+    bank: "",
+    agency: "",
+    account: ""
   };
 
-  const handleEntryChange = (index: number, field: keyof PayslipEntry, value: string) => {
-    const updatedEntries = [...formData.entries];
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value };
-    setFormData(prev => ({ ...prev, entries: updatedEntries }));
+  const handleFormSubmit = (data: PayslipData) => {
+    setPayslipData(data);
   };
+  
+  // Para preencher com dados de exemplo ao carregar
+  // useState(() => {
+  //   setPayslipData(exampleData);
+  // }, []);
 
-  const addEntry = () => {
-    setFormData(prev => ({
-      ...prev,
-      entries: [...prev.entries, { code: '', description: '', reference: '', vencimento: '', desconto: '' }]
-    }));
-  };
-
-  const removeEntry = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      entries: prev.entries.filter((_, i) => i !== index)
-    }));
-  };
-
-  const generatePDF = () => {
-    const element = document.getElementById('preview-container');
-    if (!element) return;
-
-    const opt = {
-      margin: 0,
-      filename: 'holerite.pdf',
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
-    };
-
-    html2pdf().from(element).set(opt).save();
-  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+    <div className="container mx-auto p-8 bg-gray-50 min-h-screen">
+      
+      {/* Container do Formulário e Botão - ID para impressão */}
+      <div id="payslip-form" className="mb-8 p-6 bg-white rounded-lg shadow-md max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
           Gerador de Holerite
         </h1>
+        {/* Passe os dados de exemplo para o formulário se quiser */}
+        <PayslipForm onSubmit={handleFormSubmit} initialData={exampleData} />
+        <button
+          onClick={() => window.print()}
+          className="mt-6 w-full px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!payslipData}
+        >
+          🖨️ Imprimir PDF
+        </button>
+      </div>
 
-        <div className="flex flex-col gap-8">
-          <PayslipForm
-            formData={formData}
-            onInputChange={handleInputChange}
-            onEntryChange={handleEntryChange}
-            onAddEntry={addEntry}
-            onRemoveEntry={removeEntry}
-            onGeneratePDF={generatePDF}
-          />
+      {/* Container do Preview - ID para impressão */}
+      {/* O `flex` e `justify-center` são para centralizar o A4 na tela */}
+      <div id="payslip-preview" className="flex justify-center">
+        {payslipData ? (
+          <PayslipPreview payslip={payslipData} />
+        ) : (
+          <div className="text-center text-gray-500">
+            Preencha o formulário para visualizar o holerite.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
-                                        <div 
-
-                                          id="preview-container"
-
-                                          className="mx-auto overflow-hidden shadow-lg"
-
-                                          style={{
-                                            width: '190mm',
-                                            minHeight: 'auto',
-                                            height: 'auto',
-                                            padding: '10mm',
-                                            margin: '20px auto',
-                                            boxShadow: '0 0 10px rgba(0,0,0,0.15)',
-                                            backgroundColor: '#E4FCE4',
-                                            overflowX: 'hidden'
-                                          }}
-
-                                        >
-
-                                <PayslipPreview data={formData} />
-
-                              </div>
-
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                      );
-
-                    }
-
-                    
-
-                    export default App;
-
-                    
+export default App;

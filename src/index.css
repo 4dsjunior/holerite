@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Define o tamanho da página de impressão para A4
+  e define uma margem de impressão padrão.
+*/
+@page {
+  size: A4;
+  margin: 1cm; /* Ajuste se necessário */
+}
+
+@media print {
+  /* Esconde o formulário e o botão de imprimir */
+  #payslip-form {
+    display: none !important;
+  }
+
+  /* Remove o padding/margin do corpo da página de impressão */
+  body {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  /* Garante que o preview do holerite seja a única coisa visível */
+  #payslip-preview {
+    /* Remove o flex-box de centralização da tela */
+    display: block !important;
+    justify-content: start !important;
+    
+    /* Faz o preview ocupar a página de impressão */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Remove sombras e bordas do container do preview */
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /* Garante que o componente interno do holerite
+    (que tem o w-[190mm]) não tenha sombra ou borda.
+  */
+  #payslip-preview > div {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0;
+    margin: 0;
+    width: 100% !important; /* Ocupa a largura da página */
+    height: 100% !important; /* Ocupa a altura da página */
+  }
+}

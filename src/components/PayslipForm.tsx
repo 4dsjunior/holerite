@@ -1,276 +1,93 @@
-import { Plus, Trash2, FileDown } from 'lucide-react';
-import { PayslipData, PayslipEntry } from '../types/payslip';
+import { useState } from 'react';
+import { PayslipData, PayslipItem } from '../types/payslip';
 
 interface PayslipFormProps {
-  formData: PayslipData;
-  onInputChange: (field: keyof PayslipData, value: string) => void;
-  onEntryChange: (index: number, field: keyof PayslipEntry, value: string) => void;
-  onAddEntry: () => void;
-  onRemoveEntry: (index: number) => void;
-  onGeneratePDF: () => void;
+  onSubmit: (data: PayslipData) => void;
+  initialData?: PayslipData;
 }
 
-function PayslipForm({
-  formData,
-  onInputChange,
-  onEntryChange,
-  onAddEntry,
-  onRemoveEntry,
-  onGeneratePDF
-}: PayslipFormProps) {
+export function PayslipForm({ onSubmit, initialData }: PayslipFormProps) {
+  const [formData, setFormData] = useState<PayslipData>(initialData || {
+    period: '',
+    companyName: '',
+    companyAddress: '',
+    companyCnpj: '',
+    employeeName: '',
+    employeeCode: '',
+    employeeCbo: '',
+    employeeFunction: '',
+    items: [],
+    baseSalary: 0,
+    inssBase: 0,
+    fgtsBase: 0,
+    fgtsMonth: 0,
+    irrfBase: 0,
+    bank: '',
+    agency: '',
+    account: '',
+  });
+
+  const handleInputChange = (field: keyof PayslipData, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleItemChange = (index: number, field: keyof PayslipItem, value: string | number) => {
+    const newItems = [...formData.items];
+    newItems[index] = { ...newItems[index], [field]: value };
+    setFormData(prev => ({ ...prev, items: newItems }));
+  };
+
+  const handleAddItem = () => {
+    setFormData(prev => ({ ...prev, items: [...prev.items, { code: '', description: '', reference: '', earnings: 0, deductions: 0 }] }));
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const newItems = [...formData.items];
+    newItems.splice(index, 1);
+    setFormData(prev => ({ ...prev, items: newItems }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 space-y-8">
-      {/* Linha 1: 4 Colunas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Coluna 1: Dados da Empresa */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">Dados do Holerite</h3>
-          <input
-            type="text"
-            placeholder="Nome da empresa"
-            value={formData.companyName}
-            onChange={(e) => onInputChange('companyName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="CNPJ"
-            value={formData.companyCnpj}
-            onChange={(e) => onInputChange('companyCnpj', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Endereço"
-            value={formData.companyAddress}
-            onChange={(e) => onInputChange('companyAddress', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Coluna 2: Dados do Funcionário */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">Dados do Funcionário</h3>
-          <input
-            type="text"
-            placeholder="Código"
-            value={formData.employeeCode}
-            onChange={(e) => onInputChange('employeeCode', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Nome completo"
-            value={formData.employeeName}
-            onChange={(e) => onInputChange('employeeName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="CPF"
-            value={formData.employeeCpf}
-            onChange={(e) => onInputChange('employeeCpf', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Cargo"
-            value={formData.employeePosition}
-            onChange={(e) => onInputChange('employeePosition', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Data de admissão (dd/mm/aaaa)"
-            value={formData.admissionDate}
-            onChange={(e) => onInputChange('admissionDate', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Coluna 3: Período de Referência */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">Período de Referência</h3>
-          <input
-            type="text"
-            placeholder="Mês"
-            value={formData.referenceMonth}
-            onChange={(e) => onInputChange('referenceMonth', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Ano"
-            value={formData.referenceYear}
-            onChange={(e) => onInputChange('referenceYear', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Coluna 4: Dados Bancários */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">Dados Bancários</h3>
-          <input
-            type="text"
-            placeholder="Banco"
-            value={formData.bankName}
-            onChange={(e) => onInputChange('bankName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Agência"
-            value={formData.bankAgency}
-            onChange={(e) => onInputChange('bankAgency', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <input
-            type="text"
-            placeholder="Conta"
-            value={formData.bankAccount}
-            onChange={(e) => onInputChange('bankAccount', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <input type="text" placeholder="Período (Ex: Outubro/2025)" value={formData.period} onChange={e => handleInputChange('period', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Nome da Empresa" value={formData.companyName} onChange={e => handleInputChange('companyName', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Endereço da Empresa" value={formData.companyAddress} onChange={e => handleInputChange('companyAddress', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="CNPJ da Empresa" value={formData.companyCnpj} onChange={e => handleInputChange('companyCnpj', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Nome do Funcionário" value={formData.employeeName} onChange={e => handleInputChange('employeeName', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Código do Funcionário" value={formData.employeeCode} onChange={e => handleInputChange('employeeCode', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="CBO do Funcionário" value={formData.employeeCbo} onChange={e => handleInputChange('employeeCbo', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Função do Funcionário" value={formData.employeeFunction} onChange={e => handleInputChange('employeeFunction', e.target.value)} className="p-2 border rounded" />
+        <input type="number" placeholder="Salário Base" value={formData.baseSalary} onChange={e => handleInputChange('baseSalary', e.target.valueAsNumber)} className="p-2 border rounded" />
+        <input type="number" placeholder="Base INSS" value={formData.inssBase} onChange={e => handleInputChange('inssBase', e.target.valueAsNumber)} className="p-2 border rounded" />
+        <input type="number" placeholder="Base FGTS" value={formData.fgtsBase} onChange={e => handleInputChange('fgtsBase', e.target.valueAsNumber)} className="p-2 border rounded" />
+        <input type="number" placeholder="FGTS do Mês" value={formData.fgtsMonth} onChange={e => handleInputChange('fgtsMonth', e.target.valueAsNumber)} className="p-2 border rounded" />
+        <input type="number" placeholder="Base IRRF" value={formData.irrfBase} onChange={e => handleInputChange('irrfBase', e.target.valueAsNumber)} className="p-2 border rounded" />
+        <input type="text" placeholder="Banco" value={formData.bank} onChange={e => handleInputChange('bank', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Agência" value={formData.agency} onChange={e => handleInputChange('agency', e.target.value)} className="p-2 border rounded" />
+        <input type="text" placeholder="Conta" value={formData.account} onChange={e => handleInputChange('account', e.target.value)} className="p-2 border rounded" />
       </div>
 
-      {/* Linha 2: Bases de Cálculo */}
-      <div>
-        <h3 className="text-lg font-medium text-gray-800 mb-3">Bases de Cálculo</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Salário Base"
-              value={formData.salarioBase}
-              onChange={(e) => onInputChange('salarioBase', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              placeholder="Base Cálc. FGTS"
-              value={formData.baseCalcFgts}
-              onChange={(e) => onInputChange('baseCalcFgts', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              placeholder="Base Cálc. IRRF"
-              value={formData.baseCalcIrrf}
-              onChange={(e) => onInputChange('baseCalcIrrf', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              placeholder="Data para pagamento (dd/mm/aaaa)"
-              value={formData.paymentDate}
-              onChange={(e) => onInputChange('paymentDate', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Sal. Contr. INSS"
-              value={formData.salContrInss}
-              onChange={(e) => onInputChange('salContrInss', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              placeholder="FGTS do Mês"
-              value={formData.fgtsMes}
-              onChange={(e) => onInputChange('fgtsMes', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              placeholder="Faixa IRRF"
-              value={formData.faixaIrrf}
-              onChange={(e) => onInputChange('faixaIrrf', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+      <h3 className="text-lg font-bold">Itens do Holerite</h3>
+      {formData.items.map((item, index) => (
+        <div key={index} className="grid grid-cols-5 gap-2 items-center">
+          <input type="text" placeholder="Código" value={item.code} onChange={e => handleItemChange(index, 'code', e.target.value)} className="p-2 border rounded" />
+          <input type="text" placeholder="Descrição" value={item.description} onChange={e => handleItemChange(index, 'description', e.target.value)} className="p-2 border rounded" />
+          <input type="text" placeholder="Referência" value={item.reference} onChange={e => handleItemChange(index, 'reference', e.target.value)} className="p-2 border rounded" />
+          <input type="number" placeholder="Vencimentos" value={item.earnings} onChange={e => handleItemChange(index, 'earnings', e.target.valueAsNumber)} className="p-2 border rounded" />
+          <input type="number" placeholder="Descontos" value={item.deductions} onChange={e => handleItemChange(index, 'deductions', e.target.valueAsNumber)} className="p-2 border rounded" />
+          <button type="button" onClick={() => handleRemoveItem(index)} className="text-red-500">Remover</button>
         </div>
-      </div>
+      ))}
+      <button type="button" onClick={handleAddItem} className="text-blue-500">Adicionar Item</button>
 
-      {/* Linha 3: Verbas */}
-      <div>
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="text-lg font-medium text-gray-800">Verbas</h3>
-          <button
-            onClick={onAddEntry}
-            className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            Adicionar
-          </button>
-        </div>
-        <div className="space-y-3">
-          {formData.entries.map((entry, index) => (
-            <div key={index} className="border border-gray-200 rounded-md p-3 space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  placeholder="Código"
-                  value={entry.code}
-                  onChange={(e) => onEntryChange(index, 'code', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <input
-                  type="text"
-                  placeholder="Descrição"
-                  value={entry.description}
-                  onChange={(e) => onEntryChange(index, 'description', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                <input
-                  type="text"
-                  placeholder="Referência"
-                  value={entry.reference}
-                  onChange={(e) => onEntryChange(index, 'reference', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <input
-                  type="text"
-                  placeholder="Vencimento"
-                  value={entry.vencimento}
-                  onChange={(e) => onEntryChange(index, 'vencimento', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <input
-                  type="text"
-                  placeholder="Desconto"
-                  value={entry.desconto}
-                  onChange={(e) => onEntryChange(index, 'desconto', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <button
-                onClick={() => onRemoveEntry(index)}
-                className="flex items-center gap-1 text-red-600 hover:text-red-700 text-sm"
-              >
-                <Trash2 size={14} />
-                Remover
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Linha 4: Botão Salvar */}
-      <div className="text-center">
-        <button
-          onClick={onGeneratePDF}
-          className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-semibold"
-        >
-          <FileDown size={20} />
-          Salvar PDF
-        </button>
-      </div>
-    </div>
+      <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">Salvar</button>
+    </form>
   );
 }
 
