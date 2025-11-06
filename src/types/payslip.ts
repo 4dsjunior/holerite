@@ -2,8 +2,8 @@ export interface PayslipItem {
   code: string;
   description: string;
   reference: string;
-  earnings: number;
-  deductions: number;
+  earnings: number | null;
+  deductions: number| null;
 }
 
 export interface PayslipData {
@@ -16,11 +16,11 @@ export interface PayslipData {
   employeeCbo: string;
   employeeFunction: string;
   items: PayslipItem[];
-  baseSalary: number;
-  inssBase: number;
-  fgtsBase: number;
-  fgtsMonth: number;
-  irrfBase: number;
+  baseSalary: number| null;
+  inssBase: number| null;
+  fgtsBase: number|null;
+  fgtsMonth: number| null;
+  irrfBase: number| null;
   bank: string;
   agency: string;
   account: string;
