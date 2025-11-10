@@ -79,7 +79,7 @@ export function PayslipForm({ onSubmit, initialData }: PayslipFormProps) {
           <input type="text" placeholder="Código" value={item.code} onChange={e => handleItemChange(index, 'code', e.target.value)} className="p-2 border rounded" />
           <input type="text" placeholder="Descrição" value={item.description} onChange={e => handleItemChange(index, 'description', e.target.value)} className="p-2 border rounded" />
           <input type="text" placeholder="Referência" value={item.reference} onChange={e => handleItemChange(index, 'reference', e.target.value)} className="p-2 border rounded" />
-          <input type="number" placeholder="Vencimentos" value={item.earnings} onChange={e => handleItemChange(index, 'earnings', e.target.valueAsNumber)} className="p-2 border rounded" />
+          <input type="number" placeholder="Recebimentos" value={item.earnings} onChange={e => handleItemChange(index, 'earnings', e.target.valueAsNumber)} className="p-2 border rounded" />
           <input type="number" placeholder="Descontos" value={item.deductions} onChange={e => handleItemChange(index, 'deductions', e.target.valueAsNumber)} className="p-2 border rounded" />
           <button type="button" onClick={() => handleRemoveItem(index)} className="text-red-500">Remover</button>
         </div>
